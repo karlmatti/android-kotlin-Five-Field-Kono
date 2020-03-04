@@ -1,8 +1,8 @@
 package karlmatti.application.hw1;
 
-public enum class Player(s: String) {
-    Player1("P1"),
-    Player2("P2"),
+enum class Player(s: String) {
+    One("PLAYER1"),
+    Two("PLAYER2"),
     None("NONE");
 
 }

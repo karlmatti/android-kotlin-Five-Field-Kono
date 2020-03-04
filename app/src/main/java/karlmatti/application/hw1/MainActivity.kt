@@ -13,6 +13,8 @@ class MainActivity : AppCompatActivity() {
     private var counter = 0
     private lateinit var lastClickButton: Button
     private lateinit var gameBoard: List<List<Button>>
+    private lateinit var player1Color: String
+    private lateinit var player2Color: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +25,8 @@ class MainActivity : AppCompatActivity() {
         val row3 = listOf(button30, button31, button32, button33, button34)
         val row4 = listOf(button40, button41, button42, button43, button44)
         gameBoard= listOf(row0, row1, row2, row3, row4)
+        player1Color = button40.background.constantState.toString()
+        player2Color = button00.background.constantState.toString()
     }
 
     fun handleClick(btn: View) {
@@ -33,7 +37,7 @@ class MainActivity : AppCompatActivity() {
                 button.background = lastClickButton.background
 
                 lastClickButton.setBackgroundResource(R.drawable.empty_button)
-
+                Log.d("whoWon", whoWon().toString())
             }
         } else {
             lastClickButton = button
@@ -104,5 +108,27 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun checkWinner
+    private fun whoWon(): Player {
+        //Check if Player1 has won
+        if (gameBoard[0][0].background.constantState.toString() == player1Color &&
+            gameBoard[0][1].background.constantState.toString() == player1Color &&
+            gameBoard[0][2].background.constantState.toString() == player1Color &&
+            gameBoard[0][3].background.constantState.toString() == player1Color &&
+            gameBoard[0][4].background.constantState.toString() == player1Color &&
+            gameBoard[1][0].background.constantState.toString() == player1Color &&
+            gameBoard[1][4].background.constantState.toString() == player1Color
+                ) return Player.One
+
+        //Check if Player2 has won
+        if (gameBoard[4][0].background.constantState.toString() == player2Color &&
+            gameBoard[4][1].background.constantState.toString() == player2Color &&
+            gameBoard[4][2].background.constantState.toString() == player2Color &&
+            gameBoard[4][3].background.constantState.toString() == player2Color &&
+            gameBoard[4][4].background.constantState.toString() == player2Color &&
+            gameBoard[3][0].background.constantState.toString() == player2Color &&
+            gameBoard[3][4].background.constantState.toString() == player2Color
+        ) return Player.Two
+
+        return Player.None
+    }
 }
