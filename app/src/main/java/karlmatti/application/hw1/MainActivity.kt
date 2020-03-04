@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var gameBoard: List<List<Button>>
     private lateinit var player1Color: String
     private lateinit var player2Color: String
+    private lateinit var whoseTurn: Enum<Player>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,17 +28,21 @@ class MainActivity : AppCompatActivity() {
         gameBoard= listOf(row0, row1, row2, row3, row4)
         player1Color = button40.background.constantState.toString()
         player2Color = button00.background.constantState.toString()
+        whoseTurn = Player.One
     }
 
     fun handleClick(btn: View) {
         val button = btn as Button
         counter++
         if (counter % 2 == 0) {
-            if(isEmptySpace(button) && isMovedDiagonally(lastClickButton, button)) {
+            if(isEmptySpace(button) &&
+                isMovedDiagonally(lastClickButton, button) &&
+                isMovingSelfButtons(lastClickButton)) {
                 button.background = lastClickButton.background
 
                 lastClickButton.setBackgroundResource(R.drawable.empty_button)
-                Log.d("whoWon", whoWon().toString())
+                Log.d("whoWon()", whoWon().toString())
+                changeTurn()
             }
         } else {
             lastClickButton = button
@@ -131,4 +136,24 @@ class MainActivity : AppCompatActivity() {
 
         return Player.None
     }
+
+    private fun changeTurn(){
+        if(whoseTurn==Player.One){
+            whoseTurn = Player.Two
+        } else {
+            whoseTurn = Player.One
+        }
+    }
+
+    private fun isMovingSelfButtons(button: Button): Boolean {
+        if(button.background.constantState.toString() == player1Color &&
+                whoseTurn == Player.One){
+            return true
+        }  else if (button.background.constantState.toString() == player2Color &&
+                whoseTurn == Player.Two) {
+            return true
+        }
+        return false
+    }
+
 }
