@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import androidx.core.graphics.drawable.toDrawable
 import kotlinx.android.synthetic.main.game_board.*
-import kotlinx.android.synthetic.main.game_statistics.*
 
 class MainActivity : AppCompatActivity() {
     private var counter = 0
@@ -35,8 +33,8 @@ class MainActivity : AppCompatActivity() {
         val button = btn as Button
         counter++
         if (counter % 2 == 0) {
-            if(isEmptySpace(button) &&
-                isMovedDiagonally(lastClickButton, button) &&
+            if(isMovingToEmptySpace(button) &&
+                isMovingDiagonally(lastClickButton, button) &&
                 isMovingSelfButtons(lastClickButton)) {
                 button.background = lastClickButton.background
 
@@ -50,12 +48,12 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-    private fun isEmptySpace(button: Button): Boolean {
+    private fun isMovingToEmptySpace(button: Button): Boolean {
         return button.background.constantState ==
                 resources.getDrawable(R.drawable.empty_button).constantState
     }
 
-    private fun isMovedDiagonally(firstlyClickedBtn: Button, secondlyClickedBtn: Button): Boolean {
+    private fun isMovingDiagonally(firstlyClickedBtn: Button, secondlyClickedBtn: Button): Boolean {
         var row: Int = 0
         var col: Int = 0
         for (i in 0..4) {
@@ -113,6 +111,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun isMovingSelfButtons(button: Button): Boolean {
+        if(button.background.constantState.toString() == player1Color &&
+            whoseTurn == Player.One){
+            return true
+        }  else if (button.background.constantState.toString() == player2Color &&
+            whoseTurn == Player.Two) {
+            return true
+        }
+        return false
+    }
+
     private fun whoWon(): Player {
         //Check if Player1 has won
         if (gameBoard[0][0].background.constantState.toString() == player1Color &&
@@ -145,15 +154,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun isMovingSelfButtons(button: Button): Boolean {
-        if(button.background.constantState.toString() == player1Color &&
-                whoseTurn == Player.One){
-            return true
-        }  else if (button.background.constantState.toString() == player2Color &&
-                whoseTurn == Player.Two) {
-            return true
-        }
-        return false
-    }
+
 
 }

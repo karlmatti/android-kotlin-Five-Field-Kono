@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinnerItems">
+        <item>Player V Player</item>
+        <item>Player V Computer</item>
+        <item>Computer V Computer</item>
+
+    </string-array>
+
+
+</resources>
