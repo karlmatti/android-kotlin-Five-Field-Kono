@@ -1,119 +1,99 @@
 package karlmatti.application.hw1
 
+import java.lang.Math.abs
+
 class KonoGame {
-    private var counter = 0
-
-    private lateinit var gameBoardMatrix: Array<Array<Int>>
-    private var player1Score = 0
-    private var player2Score = 0
-    private lateinit var whoseTurn: Enum<Player>
-    private var gameStarted: Boolean = false
-    private lateinit var gameState: MutableMap<String, Any>
-
-    fun startGame(player1Starts: Boolean) {
-        resetGameBoard()
-
-        whoseTurn = if(player1Starts) { Player.One }
-                    else { Player.Two }
-
-        gameStarted = true
-
+    companion object {
+        private var ui = MainActivity()
     }
-    fun resetGameBoard() {
-        gameBoardMatrix = Array(5) { Array(5) {0}}
-        for(i in 0..4){
-            gameBoardMatrix[0][i]=2
-            gameBoardMatrix[4][i]=1
-        }
-        gameBoardMatrix[1][0] = 2
-        gameBoardMatrix[1][4] = 2
-        gameBoardMatrix[3][0] = 1
-        gameBoardMatrix[3][4] = 1
-    }
+    private var whoseTurn = Player.One
+    private var gameMode = Mode.PlayerVsPlayer.value
+    private var isMoveClick: Boolean = false
+    private var selectedButtonToMove = arrayOf(0, 0)
 
-    fun whoWon(): Player {
-        if(gameBoardMatrix[0][0] == 1 && gameBoardMatrix[0][1] == 1 &&
-            gameBoardMatrix[0][2] == 1 && gameBoardMatrix[0][3] == 1 &&
-            gameBoardMatrix[0][4] == 1 && gameBoardMatrix[1][4] == 1 &&
-            gameBoardMatrix[1][0] == 1) {
-            return Player.One
-        } else if(gameBoardMatrix[4][0] == 2 && gameBoardMatrix[4][1] == 2 &&
-            gameBoardMatrix[4][2] == 2 && gameBoardMatrix[4][3] == 2 &&
-            gameBoardMatrix[4][4] == 2 && gameBoardMatrix[3][4] == 2 &&
-            gameBoardMatrix[3][0] == 2) {
-            return Player.Two
+    var gameBoard = arrayOf(
+        intArrayOf(Player.Two.color, Player.Two.color, Player.Two.color, Player.Two.color, Player.Two.color),
+        intArrayOf(Player.Two.color, Player.None.color, Player.None.color, Player.None.color, Player.Two.color),
+        intArrayOf(Player.None.color, Player.None.color, Player.None.color, Player.None.color, Player.None.color),
+        intArrayOf(Player.One.color, Player.None.color, Player.None.color, Player.None.color, Player.One.color),
+        intArrayOf(Player.One.color, Player.One.color, Player.One.color, Player.One.color, Player.One.color)
+    )
+
+    fun handleClickOn(row: Int, col: Int) {
+        if(isMoveClick){
+            val moveButtonTo = arrayOf(row, col)
+            handleMove(selectedButtonToMove, moveButtonTo)
+            isMoveClick = false
         } else {
-            return Player.None
+            selectedButtonToMove = arrayOf(row, col)
+            isMoveClick = true
         }
     }
 
-    fun changeTurn() {
+    private fun handleMove(selectedBtnToMove: Array<Int>, moveBtnTo: Array<Int>) {
+        if(isMovingDiagonally(selectedBtnToMove, moveBtnTo) &&
+                    isMovingToEmptySquare(moveBtnTo) &&
+                    isMovingSelfButtons(selectedBtnToMove)) {
+
+            gameBoard[moveBtnTo[0]][moveBtnTo[1]] = gameBoard[selectedBtnToMove[0]][selectedBtnToMove[1]]
+            gameBoard[selectedBtnToMove[0]][selectedBtnToMove[1]] = Player.None.color
+
+            ui.paintSquare(moveBtnTo, gameBoard[moveBtnTo[0]][moveBtnTo[1]])
+            ui.paintSquare(selectedBtnToMove, Player.None.color)
+
+            //changeTurn()
+        }
+
+    }
+
+    private fun isMovingSelfButtons(selectedButtonToMove: Array<Int>): Boolean {
+        if (gameBoard[selectedButtonToMove[0]][selectedButtonToMove[1]] == whoseTurn.color) {
+            return true
+        }
+        return false
+    }
+
+    private fun isMovingToEmptySquare(moveButtonTo: Array<Int>): Boolean {
+        if (gameBoard[moveButtonTo[0]][moveButtonTo[1]] == Player.None.color) {
+            return true
+        }
+        return false
+    }
+
+    private fun isMovingDiagonally(
+        selectedButtonToMove: Array<Int>,
+        moveButtonTo: Array<Int>
+    ): Boolean {
+
+        if (kotlin.math.abs(moveButtonTo[0] - selectedButtonToMove[0]) <= 1 &&
+            kotlin.math.abs(moveButtonTo[1] - selectedButtonToMove[1]) <= 1) {
+            if(selectedButtonToMove[0]!=moveButtonTo[0] &&
+                    selectedButtonToMove[1]!=moveButtonTo[1]) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun changeTurn(){
         whoseTurn = if(whoseTurn == Player.One){
+            ui.changeStatusText("turn", Player.Two.color) // TODO: Replace with Player2 or Computer
             Player.Two
         } else {
+            ui.changeStatusText("turn", Player.One.color) // TODO: Replace with Player1 or Computer
             Player.One
         }
     }
 
-    private fun isMovingToEmptySpace(row: Int, column: Int): Boolean {
-        return gameBoardMatrix[row][column] == 0
+    fun resetGameBoard() {
+        gameBoard = arrayOf(
+            intArrayOf(Player.Two.color, Player.Two.color, Player.Two.color, Player.Two.color, Player.Two.color),
+            intArrayOf(Player.Two.color, Player.None.color, Player.None.color, Player.None.color, Player.Two.color),
+            intArrayOf(Player.None.color, Player.None.color, Player.None.color, Player.None.color, Player.None.color),
+            intArrayOf(Player.One.color, Player.None.color, Player.None.color, Player.None.color, Player.One.color),
+            intArrayOf(Player.One.color, Player.One.color, Player.One.color, Player.One.color, Player.One.color)
+        )
+        // TODO: initialize new whoseTurn
+        // TODO: initialize new gameMode
     }
-
-    private fun isMovingDiagonally(firstlyClickedBtn: Int, secondlyClickedBtn: Int): Boolean {
-        var row: Int = 0
-        var col: Int = 0
-        for (i in 0..4) {
-            for (j in 0..4) {
-                if (gameBoardMatrix[i][j] == firstlyClickedBtn){
-                    row = i
-                    col = j
-
-                    break
-                }
-            }
-        }
-
-        //north
-        if(row == 0){ // When movable button is in first row
-            if(col == 0) {
-                if(gameBoardMatrix[row+1][col+1] == secondlyClickedBtn) return true
-            } else if(col == 4) {
-                if(gameBoardMatrix[row+1][col-1] == secondlyClickedBtn) return true
-            } else {
-                if(gameBoardMatrix[row+1][col+1] == secondlyClickedBtn) return true
-                else if(gameBoardMatrix[row+1][col-1] == secondlyClickedBtn) return true
-            }
-        }
-        //south
-        else if(row == 4){ // When movable button is in last row
-            if(col == 0) {
-                if(gameBoardMatrix[row-1][col+1] == secondlyClickedBtn) return true
-            } else if(col == 4) {
-                if(gameBoardMatrix[row-1][col-1] == secondlyClickedBtn) return true
-            } else {
-                if(gameBoardMatrix[row-1][col+1] == secondlyClickedBtn) return true
-                else if(gameBoardMatrix[row-1][col-1] == secondlyClickedBtn) return true
-            }
-        }
-        //east
-        else if(col == 4){ // When movable button is in last column
-            if(gameBoardMatrix[row+1][col-1] == secondlyClickedBtn) return true
-            else if(gameBoardMatrix[row-1][col-1] == secondlyClickedBtn) return true
-        }
-
-        //west
-        else if(col == 0){ // When movable button is in first column
-            if(gameBoardMatrix[row+1][col+1] == secondlyClickedBtn) return true
-            else if(gameBoardMatrix[row-1][col+1] == secondlyClickedBtn) return true
-        }
-        //rest
-        else if(gameBoardMatrix[row+1][col+1] == secondlyClickedBtn) return true
-        else if(gameBoardMatrix[row+1][col-1] == secondlyClickedBtn) return true
-        else if(gameBoardMatrix[row-1][col+1] == secondlyClickedBtn) return true
-        else if(gameBoardMatrix[row-1][col-1] == secondlyClickedBtn) return true
-
-        return false
-
-    }
-
 }
