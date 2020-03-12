@@ -13,20 +13,11 @@ class MainActivity : AppCompatActivity() {
 
 
     private var player2Starts: Boolean = false
-    private var whoWon: Int = 0
-    private var whoseTurn: Int = 0
-    lateinit var gameBoardButtons: Array<Array<Button>>
-
+    private lateinit var gameBoardButtons: Array<Array<Button>>
     private var engine = KonoGame()
-
-
-    companion object {
-        private val TAG = this::class.java.declaringClass!!.simpleName
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("BUG01", "onCreate")
         setContentView(R.layout.activity_main)
         initializeGameBoardButtons()
     }
@@ -34,8 +25,10 @@ class MainActivity : AppCompatActivity() {
         player2Starts = !player2Starts
     }
     fun handlePlay(btn: View) {
-        engine.handlePlayBtn(player2Starts)
+        val gameMode = getGameMode(game_mode.selectedItem.toString())
+        engine.handlePlayBtn(player2Starts, gameMode)
         updateUI(false)
+
     }
 
     fun handleClick(btn: View) {
@@ -56,20 +49,26 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun updateUIState() {
-        whoseTurn = engine.whoseTurn
-        whoWon = engine.whoWon
-        if (whoWon == 0) {
-            if (whoseTurn == 1) {
-                game_status.text = "<-"
-            } else if (whoseTurn == 2) {
-                game_status.text = "->"
-            } else {
-                game_status.text = "Press start"
+        when (engine.whoWon) {
+            0 -> {
+                when (engine.whoseTurn) {
+                    1 -> {
+                        game_status.text = "<-"
+                    }
+                    2 -> {
+                        game_status.text = "->"
+                    }
+                    else -> {
+                        game_status.text = "Press start"
+                    }
+                }
             }
-        } else if (whoWon == 1) {
-            player1.text = "Winner: " + player1.text
-        } else if (whoWon == 2) {
-            player2.text = "Winner: " + player2.text
+            1 -> {
+                player1.text = "Winner: " + player1.text
+            }
+            2 -> {
+                player2.text = "Winner: " + player2.text
+            }
         }
     }
 
@@ -86,16 +85,16 @@ class MainActivity : AppCompatActivity() {
         for (row in 0..4) {
             for (col in 0..4) {
                 when {
-                    board[row][col] == 0 -> {
+                    board[row][col] == Player.None.id -> {
                         gameBoardButtons[row][col]
                             .setBackgroundResource(R.drawable.empty_button)
 
                     }
-                    board[row][col] == 1 -> {
+                    board[row][col] == Player.One.id -> {
                         gameBoardButtons[row][col]
                             .setBackgroundResource(R.drawable.player1_button)
                     }
-                    board[row][col] == 2 -> {
+                    board[row][col] == Player.Two.id -> {
                         gameBoardButtons[row][col]
                             .setBackgroundResource(R.drawable.player2_button)
                     }
@@ -104,36 +103,48 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    private fun getGameMode(selectedGameMode: String): Int {
+        return when (selectedGameMode) {
+            "Player V Player" -> {
+                Mode.PlayerVsPlayer.id
+            }
+            "Player V Computer" -> {
+                Mode.PlayerVsComputer.id
+            }
+            else -> {
+                Mode.ComputerVsComputer.id
+            }
+        }
+    }
     private fun getBtnCol(btn: View): Int {
         when {
             intArrayOf(
                 button00.id, button10.id, button20.id, button30.id, button40.id
             ).contains(btn.id) -> {
-                return 0;
+                return 0
             }
             intArrayOf(
                 button01.id, button11.id, button21.id, button31.id, button41.id
             ).contains(btn.id) -> {
-                return 1;
+                return 1
             }
             intArrayOf(
                 button02.id, button12.id, button22.id, button32.id, button42.id
             ).contains(btn.id) -> {
-                return 2;
+                return 2
             }
             intArrayOf(
                 button03.id, button13.id, button23.id, button33.id, button43.id
             ).contains(btn.id) -> {
-                return 3;
+                return 3
             }
             intArrayOf(
                 button04.id, button14.id, button24.id, button34.id, button44.id
             ).contains(btn.id) -> {
-                return 4;
+                return 4
             }
         }
-        return -1;
+        return -1
     }
 
     private fun getBtnRow(btn: View): Int {
@@ -141,35 +152,34 @@ class MainActivity : AppCompatActivity() {
             intArrayOf(
                 button00.id, button01.id, button02.id, button03.id, button04.id
             ).contains(btn.id) -> {
-                return 0;
+                return 0
             }
             intArrayOf(
                 button10.id, button11.id, button12.id, button13.id, button14.id
             ).contains(btn.id) -> {
-                return 1;
+                return 1
             }
             intArrayOf(
                 button20.id, button21.id, button22.id, button23.id, button24.id
             ).contains(btn.id) -> {
-                return 2;
+                return 2
             }
             intArrayOf(
                 button30.id, button31.id, button32.id, button33.id, button34.id
             ).contains(btn.id) -> {
-                return 3;
+                return 3
             }
             intArrayOf(
                 button40.id, button41.id, button42.id, button43.id, button44.id
             ).contains(btn.id) -> {
-                return 4;
+                return 4
             }
         }
-        return -1;
+        return -1
     }
 
 
-    fun initializeGameBoardButtons() {
-        Log.d("BUG01", "initializeGameBoardButtons")
+    private fun initializeGameBoardButtons() {
         val row0 = arrayOf(button00, button01, button02, button03, button04)
         val row1 = arrayOf(button10, button11, button12, button13, button14)
         val row2 = arrayOf(button20, button21, button22, button23, button24)

@@ -1,13 +1,14 @@
 package karlmatti.application.hw1
 
 import android.util.Log
+import kotlinx.android.synthetic.main.game_statistics.*
 
 class KonoGame {
 
 
     var whoseTurn = Player.One.id
     var whoWon = Player.None.id
-    private var gameMode = Mode.PlayerVsPlayer.value
+    private var gameMode = Mode.PlayerVsPlayer.id
     private var isMoveClick: Boolean = false
     var selectedButtonToMove = arrayOf(0, 0)
 
@@ -61,6 +62,15 @@ class KonoGame {
         return false
     }
 
+    fun handlePlayBtn(player2Starts: Boolean, selectedGameMode: Int) {
+        resetGameBoard()
+        setWhoseTurn(player2Starts)
+        whoWon = Player.None.id
+        isMoveClick = false
+        gameMode = selectedGameMode
+        Log.d("gameMode", gameMode.toString())
+    }
+
     private fun isMovingDiagonally(
         selectedButtonToMove: Array<Int>,
         moveButtonTo: Array<Int>
@@ -102,14 +112,14 @@ class KonoGame {
     }
 
     private fun changeTurn(){
-        whoseTurn = if(whoseTurn == Player.One.id){
+        this.whoseTurn = if(whoseTurn == Player.One.id){
             Player.Two.id
         } else {
             Player.One.id
         }
     }
 
-    fun resetGameBoard() {
+    private fun resetGameBoard() {
         gameBoard = arrayOf(
             intArrayOf(Player.Two.id, Player.Two.id, Player.Two.id, Player.Two.id, Player.Two.id),
             intArrayOf(Player.Two.id, Player.None.id, Player.None.id, Player.None.id, Player.Two.id),
@@ -121,19 +131,11 @@ class KonoGame {
 
     }
 
-    fun handlePlayBtn(player2Starts: Boolean) {
-        resetGameBoard()
-        setWhoseTurn(player2Starts)
-        whoWon = Player.None.id
-        isMoveClick = false
-        // TODO: initialize new gameMode
-    }
-
-    fun setWhoseTurn(player2Starts: Boolean) {
-        if (player2Starts) {
-            whoseTurn = Player.Two.id
+    private fun setWhoseTurn(player2Starts: Boolean) {
+        whoseTurn = if (player2Starts) {
+            Player.Two.id
         } else {
-            whoseTurn = Player.One.id
+            Player.One.id
         }
     }
 }
