@@ -10,7 +10,10 @@ import kotlinx.android.synthetic.main.game_board.*
 class MainActivity : AppCompatActivity() {
 
 
-    private lateinit var gameBoardButtons: Array<Array<Button>>
+    private var whoWon: Int = 0
+    private var whoseTurn: Int = 0
+    lateinit var gameBoardButtons: Array<Array<Button>>
+
     private var kono = KonoGame()
 
 
@@ -23,9 +26,6 @@ class MainActivity : AppCompatActivity() {
         Log.d("BUG01", "onCreate")
         setContentView(R.layout.activity_main)
         initializeGameBoardButtons()
-
-
-
     }
     fun handlePlay(btn: View) {
 
@@ -34,8 +34,47 @@ class MainActivity : AppCompatActivity() {
     fun handleClick(btn: View) {
         val row = getBtnRow(btn)
         val col = getBtnCol(btn)
-        Log.d(TAG, "handleClick")
-        kono.handleClickOn(row, col)
+        val isBoardUpdated = kono.handleClickOn(row, col)
+        if (isBoardUpdated) {
+            updateUI()
+        }
+
+    }
+
+    private fun updateUI() {
+        updateUIBoard()
+        updateUIState()
+
+    }
+
+    private fun updateUIState() {
+        whoseTurn = kono.whoseTurn
+        whoWon = kono.whoWon
+    }
+    fun changeStatusText(action: String, who: Int) {
+        TODO("Not yet implemented")
+    }
+
+    private fun updateUIBoard() {
+        val board = kono.gameBoard
+        for (row in 0..4) {
+            for (col in 0..4) {
+                when {
+                    board[row][col] == 0 -> {
+                        gameBoardButtons[row][col]
+                            .setBackgroundResource(R.drawable.empty_button)
+                    }
+                    board[row][col] == 1 -> {
+                        gameBoardButtons[row][col]
+                            .setBackgroundResource(R.drawable.player1_button)
+                    }
+                    board[row][col] == 2 -> {
+                        gameBoardButtons[row][col]
+                            .setBackgroundResource(R.drawable.player2_button)
+                    }
+                }
+            }
+        }
     }
 
     private fun getBtnCol(btn: View): Int {
@@ -102,25 +141,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    fun paintSquare(moveBtnTo: Array<Int>, i: Int) {
-        Log.d("BUG01", "paintSquare")
-        if (i == 0) {
-            gameBoardButtons[moveBtnTo[0]][moveBtnTo[1]]
-                .setBackgroundResource(R.drawable.empty_button)
-        } else if (i == 1) {
-            gameBoardButtons[moveBtnTo[0]][moveBtnTo[1]]
-                .setBackgroundResource(R.drawable.player1_button)
-        } else if (i == 2) {
-            gameBoardButtons[moveBtnTo[0]][moveBtnTo[1]]
-                .setBackgroundResource(R.drawable.player2_button)
-        }
-
-
-    }
-
-    fun changeStatusText(action: String, who: Int) {
-        TODO("Not yet implemented")
-    }
 
     fun initializeGameBoardButtons() {
         Log.d("BUG01", "initializeGameBoardButtons")
