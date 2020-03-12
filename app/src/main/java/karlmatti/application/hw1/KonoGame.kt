@@ -1,5 +1,7 @@
 package karlmatti.application.hw1
 
+import android.util.Log
+
 class KonoGame {
 
 
@@ -7,7 +9,7 @@ class KonoGame {
     var whoWon = Player.None.id
     private var gameMode = Mode.PlayerVsPlayer.value
     private var isMoveClick: Boolean = false
-    private var selectedButtonToMove = arrayOf(0, 0)
+    var selectedButtonToMove = arrayOf(0, 0)
 
     var gameBoard = arrayOf(
         intArrayOf(Player.Two.id, Player.Two.id, Player.Two.id, Player.Two.id, Player.Two.id),
@@ -19,26 +21,30 @@ class KonoGame {
         private set
 
     fun handleClickOn(row: Int, col: Int): Boolean {
-        if(isMoveClick){
+        if(isMoveClick && isGameNotOver()){
             val moveButtonTo = arrayOf(row, col)
             handleMove(selectedButtonToMove, moveButtonTo)
             isMoveClick = false
-            return true
+            return false
         } else {
             selectedButtonToMove = arrayOf(row, col)
             isMoveClick = true
-            return false
+            return true
         }
     }
 
     private fun handleMove(selectedBtnToMove: Array<Int>, moveBtnTo: Array<Int>) {
+        Log.d("isMovingDiagonally", isMovingDiagonally(selectedBtnToMove, moveBtnTo).toString())
+        Log.d("isMovingToEmptySquare", isMovingToEmptySquare(moveBtnTo).toString())
+        Log.d("isMovingSelfButtons", isMovingSelfButtons(selectedBtnToMove).toString())
+        Log.d("isGameNotOver", isGameNotOver().toString())
         if(isMovingDiagonally(selectedBtnToMove, moveBtnTo) &&
             isMovingToEmptySquare(moveBtnTo) &&
             isMovingSelfButtons(selectedBtnToMove)) {
             gameBoard[moveBtnTo[0]][moveBtnTo[1]] = gameBoard[selectedBtnToMove[0]][selectedBtnToMove[1]]
             gameBoard[selectedBtnToMove[0]][selectedBtnToMove[1]] = Player.None.id
 
-            //changeTurn()
+            changeTurn()
         }
 
     }
@@ -70,6 +76,31 @@ class KonoGame {
             }
         }
         return false
+    }
+
+    private fun isGameNotOver(): Boolean {
+        if (gameBoard[0][0] == Player.One.id &&
+            gameBoard[0][1] == Player.One.id &&
+            gameBoard[0][2] == Player.One.id &&
+            gameBoard[0][3] == Player.One.id &&
+            gameBoard[0][4] == Player.One.id &&
+            gameBoard[1][0] == Player.One.id &&
+            gameBoard[1][4] == Player.One.id) {
+            whoWon = Player.One.id
+            return false
+        } else if (gameBoard[4][0] == Player.Two.id &&
+            gameBoard[4][1] == Player.Two.id &&
+            gameBoard[4][2] == Player.Two.id &&
+            gameBoard[4][3] == Player.Two.id &&
+            gameBoard[4][4] == Player.Two.id &&
+            gameBoard[3][0] == Player.Two.id &&
+            gameBoard[3][4] == Player.Two.id) {
+            whoWon = Player.Two.id
+            return false
+        } else {
+            return true
+        }
+
     }
 
     private fun changeTurn(){

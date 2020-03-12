@@ -1,11 +1,13 @@
 package karlmatti.application.hw1
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.game_board.*
+import kotlinx.android.synthetic.main.game_statistics.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     private var whoseTurn: Int = 0
     lateinit var gameBoardButtons: Array<Array<Button>>
 
-    private var kono = KonoGame()
+    private var engine = KonoGame()
 
 
     companion object {
@@ -34,35 +36,53 @@ class MainActivity : AppCompatActivity() {
     fun handleClick(btn: View) {
         val row = getBtnRow(btn)
         val col = getBtnCol(btn)
-        val isBoardUpdated = kono.handleClickOn(row, col)
-        if (isBoardUpdated) {
-            updateUI()
-        }
+        val drawSelection = engine.handleClickOn(row, col)
+        updateUI(drawSelection)
+
 
     }
 
-    private fun updateUI() {
-        updateUIBoard()
+    private fun updateUI(drawSelection: Boolean) {
+        updateUIBoard(drawSelection)
         updateUIState()
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateUIState() {
-        whoseTurn = kono.whoseTurn
-        whoWon = kono.whoWon
+        whoseTurn = engine.whoseTurn
+        whoWon = engine.whoWon
+        if (whoWon == 0) {
+            if (whoseTurn == 1) {
+                game_status.text = "<-"
+            } else if (whoseTurn == 2) {
+                game_status.text = "->"
+            } else {
+                game_status.text = "Press start"
+            }
+        } else if (whoWon == 1) {
+            game_status.text = "<- winner"
+        } else if (whoWon == 2) {
+            game_status.text = "winner ->"
+        }
     }
-    fun changeStatusText(action: String, who: Int) {
-        TODO("Not yet implemented")
-    }
+    private fun updateUIBoard(drawSelection: Boolean) {
+        val board = engine.gameBoard
+        val selectedBtn = engine.selectedButtonToMove
 
-    private fun updateUIBoard() {
-        val board = kono.gameBoard
+        if (drawSelection) {
+            gameBoardButtons[selectedBtn[0]][selectedBtn[1]].text = "X"
+        } else {
+            gameBoardButtons[selectedBtn[0]][selectedBtn[1]].text = ""
+        }
+
         for (row in 0..4) {
             for (col in 0..4) {
                 when {
                     board[row][col] == 0 -> {
                         gameBoardButtons[row][col]
                             .setBackgroundResource(R.drawable.empty_button)
+
                     }
                     board[row][col] == 1 -> {
                         gameBoardButtons[row][col]
@@ -72,6 +92,7 @@ class MainActivity : AppCompatActivity() {
                         gameBoardButtons[row][col]
                             .setBackgroundResource(R.drawable.player2_button)
                     }
+
                 }
             }
         }
