@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.game_statistics.*
 class MainActivity : AppCompatActivity() {
 
 
+    private var player2Starts: Boolean = false
     private var whoWon: Int = 0
     private var whoseTurn: Int = 0
     lateinit var gameBoardButtons: Array<Array<Button>>
@@ -29,13 +30,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initializeGameBoardButtons()
     }
+    fun handleSwitch(switch: View){
+        player2Starts = !player2Starts
+    }
     fun handlePlay(btn: View) {
-
+        Log.d("player2Starts", player2Starts.toString())
+        
     }
 
     fun handleClick(btn: View) {
         val row = getBtnRow(btn)
         val col = getBtnCol(btn)
+
         val drawSelection = engine.handleClickOn(row, col)
         updateUI(drawSelection)
 
@@ -43,8 +49,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUI(drawSelection: Boolean) {
-        updateUIBoard(drawSelection)
         updateUIState()
+        updateUIBoard(drawSelection)
 
     }
 
@@ -61,11 +67,12 @@ class MainActivity : AppCompatActivity() {
                 game_status.text = "Press start"
             }
         } else if (whoWon == 1) {
-            game_status.text = "<- winner"
+            player1.text = "Winner: " + player1.text
         } else if (whoWon == 2) {
-            game_status.text = "winner ->"
+            player2.text = "Winner: " + player2.text
         }
     }
+
     private fun updateUIBoard(drawSelection: Boolean) {
         val board = engine.gameBoard
         val selectedBtn = engine.selectedButtonToMove
@@ -161,8 +168,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     fun initializeGameBoardButtons() {
         Log.d("BUG01", "initializeGameBoardButtons")
         val row0 = arrayOf(button00, button01, button02, button03, button04)
@@ -172,8 +177,6 @@ class MainActivity : AppCompatActivity() {
         val row4 = arrayOf(button40, button41, button42, button43, button44)
         gameBoardButtons = arrayOf(row0, row1, row2, row3, row4)
     }
-
-
 
 
 }

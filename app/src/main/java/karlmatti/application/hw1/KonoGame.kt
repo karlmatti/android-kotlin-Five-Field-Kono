@@ -21,23 +21,20 @@ class KonoGame {
         private set
 
     fun handleClickOn(row: Int, col: Int): Boolean {
-        if(isMoveClick && isGameNotOver()){
+
+        return if (isMoveClick && isGameContinuing()){
             val moveButtonTo = arrayOf(row, col)
             handleMove(selectedButtonToMove, moveButtonTo)
             isMoveClick = false
-            return false
+            false
         } else {
             selectedButtonToMove = arrayOf(row, col)
             isMoveClick = true
-            return true
+            true
         }
     }
 
     private fun handleMove(selectedBtnToMove: Array<Int>, moveBtnTo: Array<Int>) {
-        Log.d("isMovingDiagonally", isMovingDiagonally(selectedBtnToMove, moveBtnTo).toString())
-        Log.d("isMovingToEmptySquare", isMovingToEmptySquare(moveBtnTo).toString())
-        Log.d("isMovingSelfButtons", isMovingSelfButtons(selectedBtnToMove).toString())
-        Log.d("isGameNotOver", isGameNotOver().toString())
         if(isMovingDiagonally(selectedBtnToMove, moveBtnTo) &&
             isMovingToEmptySquare(moveBtnTo) &&
             isMovingSelfButtons(selectedBtnToMove)) {
@@ -45,6 +42,7 @@ class KonoGame {
             gameBoard[selectedBtnToMove[0]][selectedBtnToMove[1]] = Player.None.id
 
             changeTurn()
+            isGameContinuing()
         }
 
     }
@@ -78,7 +76,7 @@ class KonoGame {
         return false
     }
 
-    private fun isGameNotOver(): Boolean {
+    private fun isGameContinuing(): Boolean {
         if (gameBoard[0][0] == Player.One.id &&
             gameBoard[0][1] == Player.One.id &&
             gameBoard[0][2] == Player.One.id &&

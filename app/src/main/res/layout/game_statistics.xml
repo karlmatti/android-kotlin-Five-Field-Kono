@@ -83,13 +83,14 @@
         app:layout_constraintGuide_percent="0.5" />
 
     <Switch
-        android:id="@+id/whoStarts"
+        android:id="@+id/who_starts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="Player1 Starts"
+        android:onClick="handleSwitch"
+        android:text="Player2 Starts"
         app:layout_constraintBottom_toTopOf="@+id/playButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -104,7 +105,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:entries="@array/spinnerItems"
-        app:layout_constraintBottom_toTopOf="@+id/whoStarts"
+        app:layout_constraintBottom_toTopOf="@+id/who_starts"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -145,6 +146,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/whoStarts" />
+        app:layout_constraintTop_toBottomOf="@+id/who_starts" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
