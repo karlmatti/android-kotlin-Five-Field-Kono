@@ -21,6 +21,26 @@ class KonoGame {
     )
         private set
 
+    fun saveGameState(): HashMap<String, Any> {
+        val hashMap : HashMap<String, Any>
+                = HashMap<String, Any> ()
+        hashMap["whoseTurn"] = whoseTurn
+        hashMap["whoWon"] = whoWon
+        hashMap["gameMode"] = gameMode
+        hashMap["isMoveClick"] = isMoveClick
+        hashMap["selectedButtonToMove"] = selectedButtonToMove
+
+        return hashMap
+    }
+
+    fun loadGameState(hashMap: HashMap<String, Any>) {
+        whoseTurn = hashMap["whoseTurn"] as Int
+        whoWon = hashMap["whoWon"] as Int
+        gameMode = hashMap["gameMode"] as Int
+        isMoveClick = hashMap["isMoveClick"] as Boolean
+        selectedButtonToMove = hashMap["selectedButtonToMove"] as Array<Int>
+    }
+
     fun handleClickOn(row: Int, col: Int): Boolean {
 
         return if (isMoveClick && isGameContinuing()){
@@ -68,7 +88,7 @@ class KonoGame {
         whoWon = Player.None.id
         isMoveClick = false
         gameMode = selectedGameMode
-        Log.d("gameMode", gameMode.toString())
+
     }
 
     private fun isMovingDiagonally(

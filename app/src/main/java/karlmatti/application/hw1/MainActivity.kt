@@ -11,10 +11,12 @@ import kotlinx.android.synthetic.main.game_statistics.*
 
 class MainActivity : AppCompatActivity() {
 
-
+    companion object {
+        private val TAG = this::class.java.declaringClass!!.simpleName
+        private var engine = KonoGame()
+    }
     private var player2Starts: Boolean = false
     private lateinit var gameBoardButtons: Array<Array<Button>>
-    private var engine = KonoGame()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -188,5 +190,17 @@ class MainActivity : AppCompatActivity() {
         gameBoardButtons = arrayOf(row0, row1, row2, row3, row4)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d(TAG, "LifeCycle: onSaveInstanceState")
+        outState.putSerializable("state", engine.saveGameState())
+    }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        Log.d(TAG, "LifeCycle: onRestoreInstanceState")
+        val state = savedInstanceState.getSerializable("state") as HashMap<String, Any>
+        engine.loadGameState(state)
+        updateUI(state["isMoveClick"] as Boolean)
+    }
 }
