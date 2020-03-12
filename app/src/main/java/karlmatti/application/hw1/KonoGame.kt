@@ -117,7 +117,23 @@ class KonoGame {
             intArrayOf(Player.One.id, Player.None.id, Player.None.id, Player.None.id, Player.One.id),
             intArrayOf(Player.One.id, Player.One.id, Player.One.id, Player.One.id, Player.One.id)
         )
-        // TODO: initialize new whoseTurn
+
+
+    }
+
+    fun handlePlayBtn(player2Starts: Boolean) {
+        resetGameBoard()
+        setWhoseTurn(player2Starts)
+        whoWon = Player.None.id
+        isMoveClick = false
         // TODO: initialize new gameMode
+    }
+
+    fun setWhoseTurn(player2Starts: Boolean) {
+        if (player2Starts) {
+            whoseTurn = Player.Two.id
+        } else {
+            whoseTurn = Player.One.id
+        }
     }
 }

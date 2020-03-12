@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity() {
         player2Starts = !player2Starts
     }
     fun handlePlay(btn: View) {
-        Log.d("player2Starts", player2Starts.toString())
-        
+        engine.handlePlayBtn(player2Starts)
+        updateUI(false)
     }
 
     fun handleClick(btn: View) {
