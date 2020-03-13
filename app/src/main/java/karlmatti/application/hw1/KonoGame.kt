@@ -45,7 +45,7 @@ class KonoGame {
 
     fun handleClickOn(row: Int, col: Int): Boolean {
 
-        
+
 
         if (isGameContinuing()) {
             return if (isMoveClick){
@@ -230,24 +230,20 @@ class KonoGame {
                             val rndPosition = (0..size).random()
 
                             val moveTo = availableMoves[rndPosition]
-                            if (!previousMoves.contains(moveTo)){
-                                makemove.add(moveFrom) // from
-                                makemove.add(moveTo) // to
-                                val currentPrevMoves = arrayListOf<IntArray>()
-                                currentPrevMoves.add(moveFrom)
-                                currentPrevMoves.add(previousMoves[0])
-                                currentPrevMoves.add(previousMoves[1])
-                                previousMoves = currentPrevMoves
-                                Log.d("previousMoves size", previousMoves.size.toString())
-                                Log.d("previousMoves 0", previousMoves[0].toString())
-                                Log.d("previousMoves 1", previousMoves[1].toString())
-                                Log.d("previousMoves 2", previousMoves[2].toString())
-                                return makemove
-                            } else {
-                                rnds = (0..6).random()
-                                i = 0
-                                j = 0
-                            }
+
+                            makemove.add(moveFrom) // from
+                            makemove.add(moveTo) // to
+                            val currentPrevMoves = arrayListOf<IntArray>()
+                            currentPrevMoves.add(moveFrom)
+                            currentPrevMoves.add(previousMoves[0])
+                            currentPrevMoves.add(previousMoves[1])
+                            previousMoves = currentPrevMoves
+                            Log.d("previousMoves size", previousMoves.size.toString())
+                            Log.d("previousMoves 0", previousMoves[0].toString())
+                            Log.d("previousMoves 1", previousMoves[1].toString())
+                            Log.d("previousMoves 2", previousMoves[2].toString())
+                            return makemove
+
 
                         }
 
