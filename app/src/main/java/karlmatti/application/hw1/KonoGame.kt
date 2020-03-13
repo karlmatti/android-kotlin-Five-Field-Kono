@@ -1,11 +1,13 @@
 package karlmatti.application.hw1
 
 import android.util.Log
-import kotlinx.android.synthetic.main.game_statistics.*
 
 class KonoGame {
 
 
+    private var previousMoves: ArrayList<IntArray> = arrayListOf(intArrayOf(-1, -1),
+                                                                 intArrayOf(-1, -1),
+                                                                 intArrayOf(-1, -1))
     var whoseTurn = Player.One.id
     var whoWon = Player.None.id
     private var gameMode = Mode.PlayerVsPlayer.id
@@ -43,27 +45,36 @@ class KonoGame {
 
     fun handleClickOn(row: Int, col: Int): Boolean {
 
-        return if (isMoveClick && isGameContinuing()){
-            val moveButtonTo = arrayOf(row, col)
-            handleMove(selectedButtonToMove, moveButtonTo)
-            isMoveClick = false
-            false
-        } else {
-            selectedButtonToMove = arrayOf(row, col)
-            isMoveClick = true
-            true
+        
+
+        if (isGameContinuing()) {
+            return if (isMoveClick){
+                val moveButtonTo = arrayOf(row, col)
+                handleMove(selectedButtonToMove, moveButtonTo)
+                isMoveClick = false
+                false
+            } else {
+                selectedButtonToMove = arrayOf(row, col)
+                isMoveClick = true
+
+                true
+            }
         }
+        return false
+
     }
 
     private fun handleMove(selectedBtnToMove: Array<Int>, moveBtnTo: Array<Int>) {
         if(isMovingDiagonally(selectedBtnToMove, moveBtnTo) &&
             isMovingToEmptySquare(moveBtnTo) &&
             isMovingSelfButtons(selectedBtnToMove)) {
+
             gameBoard[moveBtnTo[0]][moveBtnTo[1]] = gameBoard[selectedBtnToMove[0]][selectedBtnToMove[1]]
             gameBoard[selectedBtnToMove[0]][selectedBtnToMove[1]] = Player.None.id
 
             changeTurn()
             isGameContinuing()
+
         }
 
     }
@@ -88,6 +99,7 @@ class KonoGame {
         whoWon = Player.None.id
         isMoveClick = false
         gameMode = selectedGameMode
+
 
     }
 
@@ -157,5 +169,102 @@ class KonoGame {
         } else {
             Player.One.id
         }
+    }
+
+    private fun doAIMove() {
+
+    }
+
+    private fun getAvailableMoves(row: Int, col: Int): ArrayList<IntArray> {
+        val availableMoves = arrayListOf<IntArray>()
+
+        for (i in 0..4) {
+            for (j in 0..4) {
+                if(isMovingToEmptySquare(arrayOf(i, j)) &&
+                    isMovingDiagonally(
+                        arrayOf(row, col),
+                        arrayOf(i, j)
+                    ) &&
+                    isMovingSelfButtons(arrayOf(row, col)) &&
+                    isNotInPreviousMoves(i, j)
+                ) {
+
+                    availableMoves.add(intArrayOf(i, j))
+                }
+            }
+        }
+
+
+        return availableMoves
+
+
+
+    }
+
+    fun isNotInPreviousMoves(row: Int, col: Int): Boolean {
+        for (previousMove in previousMoves) {
+            if (previousMove[0] == row && previousMove[1] == col){
+                return false
+            }
+        }
+        return true
+    }
+    fun getRandomAvailableMove(): ArrayList<IntArray> {
+        val makemove = arrayListOf<IntArray>() // makemove
+        var rnds = (0..6).random()
+        var i = 0
+        var j = 0
+        while (i < 5 ) {
+            while (j < 5) {
+                if(gameBoard[i][j] == whoseTurn) {
+                    if (rnds == 0) {
+                        val moveFrom = intArrayOf(i, j)
+
+                        val availableMoves = getAvailableMoves(i, j)
+                        if (availableMoves.isEmpty()) {
+                            rnds = (0..6).random()
+                            i = 0
+                            j = 0
+                        } else {
+                            val size = availableMoves.size - 1
+                            val rndPosition = (0..size).random()
+
+                            val moveTo = availableMoves[rndPosition]
+                            if (!previousMoves.contains(moveTo)){
+                                makemove.add(moveFrom) // from
+                                makemove.add(moveTo) // to
+                                val currentPrevMoves = arrayListOf<IntArray>()
+                                currentPrevMoves.add(moveFrom)
+                                currentPrevMoves.add(previousMoves[0])
+                                currentPrevMoves.add(previousMoves[1])
+                                previousMoves = currentPrevMoves
+                                Log.d("previousMoves size", previousMoves.size.toString())
+                                Log.d("previousMoves 0", previousMoves[0].toString())
+                                Log.d("previousMoves 1", previousMoves[1].toString())
+                                Log.d("previousMoves 2", previousMoves[2].toString())
+                                return makemove
+                            } else {
+                                rnds = (0..6).random()
+                                i = 0
+                                j = 0
+                            }
+
+                        }
+
+
+                    } else {
+                        rnds -= 1
+
+                    }
+
+
+                }
+            j += 1
+            }
+            j = 0
+            i += 1
+        }
+
+        return makemove
     }
 }
