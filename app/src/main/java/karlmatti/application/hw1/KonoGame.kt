@@ -5,12 +5,12 @@ import android.util.Log
 class KonoGame {
 
 
-    private var previousMoves: ArrayList<IntArray> = arrayListOf(intArrayOf(-1, -1),
-                                                                 intArrayOf(-1, -1),
-                                                                 intArrayOf(-1, -1))
+    private var previousMoves: ArrayList<IntArray> = arrayListOf(intArrayOf(-1, -1))
     var whoseTurn = Player.One.id
     var whoWon = Player.None.id
     private var gameMode = Mode.PlayerVsPlayer.id
+    private var player1Type = PlayerType.Player.id
+    private var player2Type = PlayerType.Player.id
     private var isMoveClick: Boolean = false
     var selectedButtonToMove = arrayOf(0, 0)
 
@@ -46,31 +46,39 @@ class KonoGame {
     fun handleClickOn(row: Int, col: Int): Boolean {
 
 
-
         if (isGameContinuing()) {
-            return if (isMoveClick){
-                val moveButtonTo = arrayOf(row, col)
-                handleMove(selectedButtonToMove, moveButtonTo)
-                isMoveClick = false
-                false
-            } else {
-                selectedButtonToMove = arrayOf(row, col)
-                isMoveClick = true
-
-                true
+            if ((whoseTurn == Player.One.id && player1Type == PlayerType.Player.id) ||
+                (whoseTurn == Player.Two.id && player2Type == PlayerType.Player.id)) {
+                return if (isMoveClick) {
+                    val moveButtonTo = arrayOf(row, col)
+                    doPlayerMove(moveButtonTo)
+                    isMoveClick = false
+                    if (((whoseTurn == Player.One.id && player1Type == PlayerType.Computer.id) ||
+                        (whoseTurn == Player.Two.id && player2Type == PlayerType.Computer.id))&&
+                            isGameContinuing()){
+                        doAIMove()
+                    }
+                    false
+                } else {
+                    selectedButtonToMove = arrayOf(row, col)
+                    isMoveClick = true
+                    true
+                }
             }
+
         }
         return false
 
     }
 
-    private fun handleMove(selectedBtnToMove: Array<Int>, moveBtnTo: Array<Int>) {
-        if(isMovingDiagonally(selectedBtnToMove, moveBtnTo) &&
-            isMovingToEmptySquare(moveBtnTo) &&
-            isMovingSelfButtons(selectedBtnToMove)) {
+    private fun doPlayerMove(moveBtnTo: Array<Int>) {
 
-            gameBoard[moveBtnTo[0]][moveBtnTo[1]] = gameBoard[selectedBtnToMove[0]][selectedBtnToMove[1]]
-            gameBoard[selectedBtnToMove[0]][selectedBtnToMove[1]] = Player.None.id
+        if(isMovingDiagonally(selectedButtonToMove, moveBtnTo) &&
+            isMovingToEmptySquare(moveBtnTo) &&
+            isMovingSelfButtons(selectedButtonToMove)) {
+
+            gameBoard[moveBtnTo[0]][moveBtnTo[1]] = gameBoard[selectedButtonToMove[0]][selectedButtonToMove[1]]
+            gameBoard[selectedButtonToMove[0]][selectedButtonToMove[1]] = Player.None.id
 
             changeTurn()
             isGameContinuing()
@@ -98,9 +106,30 @@ class KonoGame {
         setWhoseTurn(player2Starts)
         whoWon = Player.None.id
         isMoveClick = false
-        gameMode = selectedGameMode
+        gameMode = setGameMode(selectedGameMode)
 
 
+    }
+
+    private fun setGameMode(selectedGameMode: Int): Int {
+        when (selectedGameMode) {
+            0 -> {
+                player1Type = PlayerType.Player.id
+                player2Type = PlayerType.Player.id
+
+            }
+            1 -> {
+                player1Type = PlayerType.Player.id
+                player2Type = PlayerType.Computer.id
+
+            }
+            2 -> {
+                player1Type = PlayerType.Computer.id
+                player2Type = PlayerType.Computer.id
+
+            }
+        }
+        return selectedGameMode
     }
 
     private fun isMovingDiagonally(
@@ -172,7 +201,15 @@ class KonoGame {
     }
 
     private fun doAIMove() {
+        val buttons = getRandomAvailableMove()
 
+        val from = buttons[0]
+        val to = buttons[1]
+        gameBoard[to[0]][to[1]] = gameBoard[from[0]][from[1]]
+        gameBoard[from[0]][from[1]] = Player.None.id
+
+        changeTurn()
+        isGameContinuing()
     }
 
     private fun getAvailableMoves(row: Int, col: Int): ArrayList<IntArray> {
@@ -201,7 +238,7 @@ class KonoGame {
 
     }
 
-    fun isNotInPreviousMoves(row: Int, col: Int): Boolean {
+    private fun isNotInPreviousMoves(row: Int, col: Int): Boolean {
         for (previousMove in previousMoves) {
             if (previousMove[0] == row && previousMove[1] == col){
                 return false
@@ -209,56 +246,54 @@ class KonoGame {
         }
         return true
     }
-    fun getRandomAvailableMove(): ArrayList<IntArray> {
+    private fun getRandomAvailableMove(): ArrayList<IntArray> {
+
         val makemove = arrayListOf<IntArray>() // makemove
-        var rnds = (0..6).random()
-        var i = 0
-        var j = 0
-        while (i < 5 ) {
-            while (j < 5) {
-                if(gameBoard[i][j] == whoseTurn) {
-                    if (rnds == 0) {
-                        val moveFrom = intArrayOf(i, j)
+        while (makemove.size < 2) {
+            var rnds = (0..6).random()
+            var i = 0
+            var j = 0
+            while (i < 5 ) {
+                while (j < 5) {
+                    if(gameBoard[i][j] == whoseTurn) {
+                        if (rnds == 0) {
+                            val moveFrom = intArrayOf(i, j)
 
-                        val availableMoves = getAvailableMoves(i, j)
-                        if (availableMoves.isEmpty()) {
-                            rnds = (0..6).random()
-                            i = 0
-                            j = 0
+                            val availableMoves = getAvailableMoves(i, j)
+                            if (availableMoves.isEmpty()) {
+                                rnds = (0..6).random()
+                                i = 0
+                                j = 0
+                            } else {
+                                val size = availableMoves.size - 1
+                                val rndPosition = (0..size).random()
+
+                                val moveTo = availableMoves[rndPosition]
+
+                                makemove.add(moveFrom) // from
+                                makemove.add(moveTo) // to
+                                val currentPrevMoves = arrayListOf<IntArray>()
+                                currentPrevMoves.add(moveFrom)
+                                currentPrevMoves.add(previousMoves[0])
+                                previousMoves = currentPrevMoves
+                                return makemove
+
+
+                            }
+
+
                         } else {
-                            val size = availableMoves.size - 1
-                            val rndPosition = (0..size).random()
-
-                            val moveTo = availableMoves[rndPosition]
-
-                            makemove.add(moveFrom) // from
-                            makemove.add(moveTo) // to
-                            val currentPrevMoves = arrayListOf<IntArray>()
-                            currentPrevMoves.add(moveFrom)
-                            currentPrevMoves.add(previousMoves[0])
-                            currentPrevMoves.add(previousMoves[1])
-                            previousMoves = currentPrevMoves
-                            Log.d("previousMoves size", previousMoves.size.toString())
-                            Log.d("previousMoves 0", previousMoves[0].toString())
-                            Log.d("previousMoves 1", previousMoves[1].toString())
-                            Log.d("previousMoves 2", previousMoves[2].toString())
-                            return makemove
-
+                            rnds -= 1
 
                         }
 
-
-                    } else {
-                        rnds -= 1
-
                     }
-
-
+                    j += 1
                 }
-            j += 1
+                j = 0
+                i += 1
             }
-            j = 0
-            i += 1
+
         }
 
         return makemove
