@@ -2,12 +2,15 @@ package karlmatti.application.hw1
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.game_board.*
 import kotlinx.android.synthetic.main.game_statistics.*
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,13 +18,20 @@ class MainActivity : AppCompatActivity() {
         private val TAG = this::class.java.declaringClass!!.simpleName
         private var engine = KonoGame()
     }
+
+    private val interval: Long = 1000
     private var player2Starts: Boolean = false
     private lateinit var gameBoardButtons: Array<Array<Button>>
+
+
+    private lateinit var handler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initializeGameBoardButtons()
+        handler = Handler()
+
     }
     fun handleSwitch(switch: View){
         player2Starts = !player2Starts
@@ -31,7 +41,21 @@ class MainActivity : AppCompatActivity() {
         engine.handlePlayBtn(player2Starts, gameMode)
         updateUI(false)
 
+        if (gameMode == Mode.ComputerVsComputer.id){
+            handleAIvsAI.run()
+        }
     }
+    var handleAIvsAI: Runnable = object : Runnable {
+        override fun run() {
+            try {
+                engine.doAIMove()
+                updateUI(false)
+            } finally {
+                handler.postDelayed(this, interval)
+            }
+        }
+    }
+
 
     fun handleClick(btn: View) {
         val row = getBtnRow(btn)
@@ -86,6 +110,7 @@ class MainActivity : AppCompatActivity() {
 
         for (row in 0..4) {
             for (col in 0..4) {
+
                 when {
                     board[row][col] == Player.None.id -> {
                         gameBoardButtons[row][col]

@@ -200,7 +200,7 @@ class KonoGame {
         }
     }
 
-    private fun doAIMove() {
+    fun doAIMove() {
         val buttons = getRandomAvailableMove()
 
         val from = buttons[0]
