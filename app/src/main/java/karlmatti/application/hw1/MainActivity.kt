@@ -37,14 +37,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun handlePlay(btn: View) {
+        handler.removeCallbacks(handleAIvsAI)
         val gameMode = getGameMode(game_mode.selectedItem.toString())
         engine.handlePlayBtn(player2Starts, gameMode)
         updateUI(false)
 
         if (gameMode == Mode.ComputerVsComputer.id){
             handleAIvsAI.run()
-        } else {
-            handler.removeCallbacks(handleAIvsAI)
+        } else if (gameMode == Mode.PlayerVsComputer.id && player2Starts) {
+            engine.doAIMove()
+            updateUI(false)
         }
     }
 
