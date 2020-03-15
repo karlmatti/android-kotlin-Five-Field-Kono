@@ -22,8 +22,6 @@ class MainActivity : AppCompatActivity() {
     private val interval: Long = 1000
     private var player2Starts: Boolean = false
     private lateinit var gameBoardButtons: Array<Array<Button>>
-
-
     private lateinit var handler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,9 +31,11 @@ class MainActivity : AppCompatActivity() {
         handler = Handler()
 
     }
+
     fun handleSwitch(switch: View){
         player2Starts = !player2Starts
     }
+
     fun handlePlay(btn: View) {
         val gameMode = getGameMode(game_mode.selectedItem.toString())
         engine.handlePlayBtn(player2Starts, gameMode)
@@ -43,8 +43,11 @@ class MainActivity : AppCompatActivity() {
 
         if (gameMode == Mode.ComputerVsComputer.id){
             handleAIvsAI.run()
+        } else {
+            handler.removeCallbacks(handleAIvsAI)
         }
     }
+
     var handleAIvsAI: Runnable = object : Runnable {
         override fun run() {
             try {
@@ -55,7 +58,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     fun handleClick(btn: View) {
         val row = getBtnRow(btn)
@@ -130,6 +132,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun getGameMode(selectedGameMode: String): Int {
         return when (selectedGameMode) {
             "Player V Player" -> {
@@ -143,6 +146,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun getBtnCol(btn: View): Int {
         when {
             intArrayOf(
@@ -205,7 +209,6 @@ class MainActivity : AppCompatActivity() {
         return -1
     }
 
-
     private fun initializeGameBoardButtons() {
         val row0 = arrayOf(button00, button01, button02, button03, button04)
         val row1 = arrayOf(button10, button11, button12, button13, button14)
@@ -227,5 +230,10 @@ class MainActivity : AppCompatActivity() {
         val state = savedInstanceState.getSerializable("state") as HashMap<String, Any>
         engine.loadGameState(state)
         updateUI(state["isMoveClick"] as Boolean)
+        if (state["gameMode"] == Mode.ComputerVsComputer.id) {
+            handleAIvsAI.run()
+        } else {
+            handler.removeCallbacks(handleAIvsAI)
+        }
     }
 }

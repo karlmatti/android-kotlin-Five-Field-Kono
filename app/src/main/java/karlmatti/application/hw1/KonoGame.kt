@@ -1,7 +1,5 @@
 package karlmatti.application.hw1
 
-import android.util.Log
-
 class KonoGame {
 
 
@@ -246,6 +244,7 @@ class KonoGame {
         }
         return true
     }
+
     private fun getRandomAvailableMove(): ArrayList<IntArray> {
 
         val makemove = arrayListOf<IntArray>() // makemove
