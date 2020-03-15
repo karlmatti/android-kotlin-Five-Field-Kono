@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun updateUIState() {
+
         when (engine.whoWon) {
             0 -> {
                 when (engine.whoseTurn) {
@@ -90,6 +91,8 @@ class MainActivity : AppCompatActivity() {
                         game_status.text = "Press start"
                     }
                 }
+                player1.text = engine.player1Name
+                player2.text = engine.player2Name
             }
             1 -> {
                 player1.text = "Winner: " + player1.text

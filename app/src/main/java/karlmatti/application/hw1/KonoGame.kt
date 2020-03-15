@@ -5,12 +5,18 @@ class KonoGame {
 
     private var previousMoves: ArrayList<IntArray> = arrayListOf(intArrayOf(-1, -1))
     var whoseTurn = Player.One.id
+        private set
     var whoWon = Player.None.id
+        private set
     private var gameMode = Mode.PlayerVsPlayer.id
     private var player1Type = PlayerType.Player.id
     private var player2Type = PlayerType.Player.id
     private var isMoveClick: Boolean = false
     var selectedButtonToMove = arrayOf(0, 0)
+    var player1Name = "Player1"
+        private set
+    var player2Name = "Player2"
+        private set
 
     var gameBoard = arrayOf(
         intArrayOf(Player.Two.id, Player.Two.id, Player.Two.id, Player.Two.id, Player.Two.id),
@@ -29,6 +35,8 @@ class KonoGame {
         hashMap["gameMode"] = gameMode
         hashMap["isMoveClick"] = isMoveClick
         hashMap["selectedButtonToMove"] = selectedButtonToMove
+        hashMap["player1Name"] = player1Name
+        hashMap["player2Name"] = player2Name
 
         return hashMap
     }
@@ -39,6 +47,8 @@ class KonoGame {
         gameMode = hashMap["gameMode"] as Int
         isMoveClick = hashMap["isMoveClick"] as Boolean
         selectedButtonToMove = hashMap["selectedButtonToMove"] as Array<Int>
+        player1Name = hashMap["player1Name"] as String
+        player2Name = hashMap["player2Name"] as String
     }
 
     fun handleClickOn(row: Int, col: Int): Boolean {
@@ -114,16 +124,22 @@ class KonoGame {
             0 -> {
                 player1Type = PlayerType.Player.id
                 player2Type = PlayerType.Player.id
+                player1Name = "Player1"
+                player2Name = "Player2"
 
             }
             1 -> {
                 player1Type = PlayerType.Player.id
                 player2Type = PlayerType.Computer.id
+                player1Name = "Player"
+                player2Name = "Computer"
 
             }
             2 -> {
                 player1Type = PlayerType.Computer.id
                 player2Type = PlayerType.Computer.id
+                player1Name = "Computer1"
+                player2Name = "Computer2"
 
             }
         }
