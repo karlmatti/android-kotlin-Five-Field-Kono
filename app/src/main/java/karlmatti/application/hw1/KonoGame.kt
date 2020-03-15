@@ -17,6 +17,10 @@ class KonoGame {
         private set
     var player2Name = "Player2"
         private set
+    var player1Score = 0
+        private set
+    var player2Score = 0
+        private set
 
     var gameBoard = arrayOf(
         intArrayOf(Player.Two.id, Player.Two.id, Player.Two.id, Player.Two.id, Player.Two.id),
@@ -37,6 +41,8 @@ class KonoGame {
         hashMap["selectedButtonToMove"] = selectedButtonToMove
         hashMap["player1Name"] = player1Name
         hashMap["player2Name"] = player2Name
+        hashMap["player1Score"] = player1Score
+        hashMap["player2Score"] = player2Score
 
         return hashMap
     }
@@ -49,6 +55,8 @@ class KonoGame {
         selectedButtonToMove = hashMap["selectedButtonToMove"] as Array<Int>
         player1Name = hashMap["player1Name"] as String
         player2Name = hashMap["player2Name"] as String
+        player1Score = hashMap["player1Score"] as Int
+        player2Score = hashMap["player2Score"] as Int
     }
 
     fun handleClickOn(row: Int, col: Int): Boolean {
@@ -169,7 +177,10 @@ class KonoGame {
             gameBoard[0][4] == Player.One.id &&
             gameBoard[1][0] == Player.One.id &&
             gameBoard[1][4] == Player.One.id) {
-            whoWon = Player.One.id
+            if (whoWon != Player.One.id) {
+                whoWon = Player.One.id
+                player1Score += 1
+            }
             return false
         } else if (gameBoard[4][0] == Player.Two.id &&
             gameBoard[4][1] == Player.Two.id &&
@@ -178,7 +189,10 @@ class KonoGame {
             gameBoard[4][4] == Player.Two.id &&
             gameBoard[3][0] == Player.Two.id &&
             gameBoard[3][4] == Player.Two.id) {
-            whoWon = Player.Two.id
+            if (whoWon != Player.Two.id) {
+                whoWon = Player.Two.id
+                player2Score += 1
+            }
             return false
         } else {
             return true

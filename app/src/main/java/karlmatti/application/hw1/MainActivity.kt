@@ -93,6 +93,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 player1.text = engine.player1Name
                 player2.text = engine.player2Name
+                player1_score.text = engine.player1Score.toString()
+                player2_score.text = engine.player2Score.toString()
             }
             1 -> {
                 player1.text = "Winner: " + player1.text
