@@ -123,7 +123,9 @@ class KonoGame {
         whoWon = Player.None.id
         isMoveClick = false
         gameMode = setGameMode(selectedGameMode)
-
+        if (player2Starts && selectedGameMode == 1) {
+            doAIMove()
+        }
 
     }
 

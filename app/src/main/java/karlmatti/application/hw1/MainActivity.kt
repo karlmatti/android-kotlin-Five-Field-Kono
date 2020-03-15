@@ -44,9 +44,6 @@ class MainActivity : AppCompatActivity() {
 
         if (gameMode == Mode.ComputerVsComputer.id){
             handleAIvsAI.run()
-        } else if (gameMode == Mode.PlayerVsComputer.id && player2Starts) {
-            engine.doAIMove()
-            updateUI(false)
         }
     }
 
