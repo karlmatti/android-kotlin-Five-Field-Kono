@@ -8,3 +8,9 @@ In Android Studio: Compile and Run the application with android device w/sdk 18+
 
 ## Languages & Techonologies: 
 Android, Kotlin, XML
+
+## Screenshots
+
+| Overview     | Different game modes available      |  Game against computer     |  
+|------------|-------------|-------------|
+| ![Screenshot](screenshots/overview.PNG) | ![Screenshot](screenshots/gamemodes.PNG)| ![Screenshot](screenshots/overview2.PNG)| 
